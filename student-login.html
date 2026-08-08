@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Student Login</title>
+
+    <!-- Browser Tab Icon -->
+    <link rel="icon" type="image/png" href="https://erode-sengunthar.ac.in/talentexam26/logo.png">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:'Poppins',sans-serif;
+        }
+
+        body{
+            background:#ffffff;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            height:100vh;
+        }
+
+        .login-box{
+            width:400px;
+            background:#fff;
+            padding:40px;
+            border-radius:18px;
+            box-shadow:0 10px 35px rgba(0,0,0,.12);
+        }
+
+        .logo{
+            text-align:center;
+            margin-bottom:25px;
+        }
+
+        .logo img{
+            width:90px;
+            margin-bottom:10px;
+        }
+
+        .logo h2{
+            color:#6A0DAD;
+            font-size:28px;
+        }
+
+        .logo p{
+            color:#666;
+            font-size:14px;
+            margin-top:5px;
+        }
+
+        .input-box{
+            margin-top:20px;
+        }
+
+        .input-box label{
+            display:block;
+            margin-bottom:8px;
+            font-size:14px;
+            font-weight:500;
+            color:#444;
+        }
+
+        .input-box input{
+            width:100%;
+            padding:13px;
+            border:1px solid #ccc;
+            border-radius:10px;
+            font-size:15px;
+            outline:none;
+            transition:.3s;
+        }
+
+        .input-box input:focus{
+            border-color:#6A0DAD;
+            box-shadow:0 0 8px rgba(106,13,173,.2);
+        }
+
+        .login-btn{
+            width:100%;
+            margin-top:30px;
+            padding:14px;
+            border:none;
+            border-radius:10px;
+            background:#6A0DAD;
+            color:white;
+            font-size:16px;
+            cursor:pointer;
+            transition:.3s;
+        }
+
+        .login-btn:hover{
+            background:#54098a;
+        }
+
+        .bottom-text{
+            margin-top:20px;
+            text-align:center;
+            color:#777;
+            font-size:14px;
+        }
+
+        .bottom-text a{
+            color:#6A0DAD;
+            text-decoration:none;
+            font-weight:600;
+        }
+
+        .bottom-text a:hover{
+            text-decoration:underline;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="login-box">
+
+    <div class="logo">
+        <img src="https://erode-sengunthar.ac.in/talentexam26/logo.png" alt="College Logo">
+
+        <h2>Student Login</h2>
+
+        <p>Anonymous Feedback System</p>
+    </div>
+
+    <form id="loginForm">
+
+        <div class="input-box">
+            <label>Register Number</label>
+            <input
+                type="text"
+                id="regno"
+                placeholder="Enter Register Number"
+                required>
+        </div>
+
+        <div class="input-box">
+            <label>Password</label>
+            <input
+                type="password"
+                id="password"
+                placeholder="Enter Password"
+                required>
+        </div>
+
+        <button type="submit" class="login-btn">
+            Login
+        </button>
+
+    </form>
+
+    <div class="bottom-text">
+        Forgot Password?
+        <a href="#">Contact Department</a>
+    </div>
+
+</div>
+
+<script>
+
+document.getElementById("loginForm").addEventListener("submit", function(event){
+
+    event.preventDefault();
+
+    // Get Values
+    const regno = document.getElementById("regno").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    // Simple Validation
+    if(regno === "" || password === ""){
+        alert("Please enter Register Number and Password.");
+        return;
+    }
+
+    // Redirect to Dashboard
+    window.location.href = "dashboard.html";
+
+});
+
+</script>
+
+</body>
+</html>

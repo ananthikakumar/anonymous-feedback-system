@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" type="image/png" href="https://erode-sengunthar.ac.in/talentexam26/logo.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anonymous Feedback System</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+body{
+    background:#f5f6fa;
+}
+header{
+    background:#6A0DAD;
+    color:white;
+    padding:18px 40px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+.logout-btn{
+    background:white;
+    color:#6A0DAD;
+    border:none;
+    padding:10px 20px;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:600;
+}
+.container{
+    width:90%;
+    max-width:900px;
+    margin:40px auto;
+}
+.card{
+    background:white;
+    padding:35px;
+    border-radius:18px;
+    box-shadow:0 8px 25px rgba(0,0,0,.1);
+}
+.card h3{
+    color:#6A0DAD;
+    margin-bottom:25px;
+}
+.form-group{
+    margin-bottom:20px;
+}
+label{
+    display:block;
+    margin-bottom:8px;
+    font-weight:500;
+}
+input,
+select,
+textarea{
+    width:100%;
+    padding:13px;
+    border:1px solid #ccc;
+    border-radius:10px;
+    font-size:15px;
+}
+textarea{
+    resize:none;
+}
+.send-btn{
+    width:100%;
+    padding:14px;
+    background:#6A0DAD;
+    color:white;
+    border:none;
+    border-radius:10px;
+    font-size:16px;
+    cursor:pointer;
+}
+.send-btn:hover{
+    background:#4d0780;
+}
+.footer{
+    margin-top:30px;
+    text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h2>Anonymous Feedback System</h2>
+
+<button class="logout-btn"
+onclick="location.href='student-login.html'">
+Logout
+</button>
+</header>
+
+<div class="container">
+
+<div class="card">
+
+<h3>Fill Your Feedback</h3>
+
+<form id="feedbackForm">
+
+<div class="form-group">
+<label>Year</label>
+<select name="year" required>
+<option value="">Select Year</option>
+<option>1st Year</option>
+<option>2nd Year</option>
+<option>3rd Year</option>
+<option>4th Year</option>
+</select>
+</div>
+
+<div class="form-group">
+<label>Department</label>
+<select name="department" required>
+<option value="">Select Department</option>
+<option>CSE</option>
+<option>CSD</option>
+<option>IT</option>
+<option>ECE</option>
+<option>EEE</option>
+<option>MECH</option>
+<option>CIVIL</option>
+</select>
+</div>
+
+<div class="form-group">
+<label>Subject</label>
+<input
+type="text"
+name="subject"
+placeholder="Enter Subject Name"
+required>
+</div>
+
+<div class="form-group">
+<label>Staff Name</label>
+<input
+type="text"
+name="staff"
+placeholder="Enter Staff Name"
+required>
+</div>
+
+<div class="form-group">
+<label>Feedback</label>
+<textarea
+name="feedback"
+rows="7"
+placeholder="Write your anonymous feedback..."
+required></textarea>
+</div>
+
+<button type="submit" class="send-btn">
+Send Feedback
+</button>
+
+</form>
+
+</div>
+
+<div class="footer">
+© 2026 Anonymous Feedback System
+</div>
+
+</div>
+
+<script>
+
+document.getElementById("feedbackForm").addEventListener("submit", async function(e){
+
+    e.preventDefault();
+
+    const data = {
+        year: document.querySelector("[name='year']").value,
+        department: document.querySelector("[name='department']").value,
+        subject: document.querySelector("[name='subject']").value,
+        staff: document.querySelector("[name='staff']").value,
+        feedback: document.querySelector("[name='feedback']").value
+    };
+
+    try{
+
+        const response = await fetch("http://localhost:5678/webhook-test/12655ffd-1cf8-4c52-ac0b-5eddb739b91e",{
+
+            method:"POST",
+
+            headers:{
+                "Content-Type":"application/json"
+            },
+
+            body:JSON.stringify(data)
+
+        });
+
+        const result = await response.text();
+
+        alert("Feedback Submitted Successfully");
+
+        console.log(result);
+
+        document.getElementById("feedbackForm").reset();
+
+    }catch(error){
+
+        console.error(error);
+
+        alert("Unable to connect to n8n");
+
+    }
+
+});
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,230 @@
+{
+  "name": "feedback",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "12655ffd-1cf8-4c52-ac0b-5eddb739b91e",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -336,
+        -48
+      ],
+      "id": "38ed1291-ab51-49f4-88dc-ead4b837d4e5",
+      "name": "Webhook",
+      "webhookId": "12655ffd-1cf8-4c52-ac0b-5eddb739b91e"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"success\": true,\n  \"message\": \"Feedback submitted successfully.\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        688,
+        -48
+      ],
+      "id": "7958dcd1-9a2b-4ebf-b9fd-52063a6c909d",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1j4t4N-DhqfRNbR7ZOkkEeAygBlQ2H3jWZpxrETOCLpQ/edit?gid=485489849#gid=485489849",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1j4t4N-DhqfRNbR7ZOkkEeAygBlQ2H3jWZpxrETOCLpQ/edit?gid=485489849#gid=485489849",
+          "mode": "url"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -144,
+        -48
+      ],
+      "id": "817b7060-d665-4dad-88a3-87d0133df7bd",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6x7FDINGnetVodOB",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ==============================\n// BAD WORDS LIST\n// ==============================\n\nconst badWords = [\n  \"fuck\",\"fucking\",\"fucker\",\"motherfucker\",\"mother fucker\",\"mf\",\n  \"shit\",\"bullshit\",\"shithead\",\n  \"bitch\",\"bitches\",\n  \"ass\",\"asshole\",\n  \"bastard\",\n  \"slut\",\"whore\",\n  \"idiot\",\"stupid\",\"dumb\",\"moron\",\"loser\",\n  \"bloody\",\"hell\",\n  \"poda\",\"podi\",\"dei\",\"di\",\n  \"loosu\",\"kirukku\",\"muttal\",\"naaye\",\n  \"thevidiya\",\"thevdiya\",\"otha\",\"otha dei\",\"otha di\",\n  \"sunni\",\"poolu\",\"punda\",\"pundai\",\"koothi\",\n  \"mayiru\",\"kena\",\"kena payale\"\n];\n\n// ==============================\n// FORM DATA FROM WEBHOOK\n// ==============================\n\nconst form = $(\"Webhook\").first().json.body;\n\nconst feedback = (form.feedback || \"\").toLowerCase();\n\n// ==============================\n// BAD WORD CHECK\n// ==============================\n\nconst hasBadWord = badWords.some(word =>\n  feedback.includes(word.toLowerCase())\n);\n\nif (hasBadWord) {\n  return [{\n    json: {\n      allowed: false,\n      message: \"Feedback contains inappropriate words.\"\n    }\n  }];\n}\n\n// ==============================\n// MATCH GOOGLE SHEET\n// ==============================\n\nconst output = [];\n\nfor (const item of $input.all()) {\n\n  const row = item.json;\n\n  if (\n    String(row.Year || \"\").trim().toLowerCase() === String(form.year || \"\").trim().toLowerCase() &&\n    String(row.Department || \"\").trim().toLowerCase() === String(form.department || \"\").trim().toLowerCase() &&\n    String(row.Subject || \"\").trim().toLowerCase() === String(form.subject || \"\").trim().toLowerCase() &&\n    String(row[\"Staff Name\"] || \"\").trim().toLowerCase() === String(form.staff || \"\").trim().toLowerCase()\n  ) {\n\n    output.push({\n      json: {\n\n        allowed: true,\n\n        // Google Sheet column name\n        email: row[\"Mail Id\"],\n\n        year: form.year,\n        department: form.department,\n        subject: form.subject,\n        staff: form.staff,\n        feedback: form.feedback,\n\n        // Debug values\n        matchedEmail: row[\"Mail Id\"],\n        matchedRow: row.row_number\n\n      }\n    });\n\n  }\n\n}\n\n// ==============================\n// NO MATCH FOUND\n// ==============================\n\nif (output.length === 0) {\n\n  return [{\n    json: {\n      allowed: false,\n      message: \"No matching staff found in Google Sheet.\"\n    }\n  }];\n\n}\n\nreturn output;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        64,
+        -48
+      ],
+      "id": "397f6b7f-1185-4b87-8c01-94c039352b2c",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{$json.email}}",
+        "subject": "feed back",
+        "message": "=<h2>Anonymous Feedback Received</h2>  <p><b>Year:</b> {{$json.year}}</p>  <p><b>Department:</b> {{$json.department}}</p>  <p><b>Subject:</b> {{$json.subject}}</p>  <p><b>Staff Name:</b> {{$json.staff}}</p>  <p><b>Feedback:</b></p>  <p>{{$json.feedback}}</p>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        480,
+        -48
+      ],
+      "id": "b8550bc8-bbfb-4ec6-82b2-cc2955181c60",
+      "name": "Send a message",
+      "webhookId": "5f2e8a7b-c87c-4ce2-8a81-c1acac1a57c4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "aY9H8CRj6PY3Zt6q",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "7b82b5b5-eefe-4747-8744-6769af42b8c2",
+              "leftValue": "={{$json.allowed}}",
+              "rightValue": "is true",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        272,
+        -48
+      ],
+      "id": "61a27c22-2cc6-4ff3-8ccd-20c63a170cef",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"success\": false,\n  \"message\": \"Feedback contains inappropriate words. Please use respectful language.\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        448,
+        160
+      ],
+      "id": "74932e21-2395-4c8f-97b0-e95510555881",
+      "name": "Respond to Webhook1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "2315ca28-ff27-4465-885f-0df08ee22d25",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ac359cec8d8cd1695eec1c133ee3d7ee11e49654899f0e781e4ae9b494c226a8"
+  },
+  "nodeGroups": [],
+  "id": "vkyTXathuJsl6OMf",
+  "tags": []
+}
